@@ -29,7 +29,24 @@ func TestIsValid(t *testing.T) {
 }
 
 func TestIsValidWithNormalize(t *testing.T) {
-	if !IsValidWithNormalize("1-1008-00092-22-1") {
-		t.Error("Expected valid ID after normalization")
+	cases := []struct {
+		id       string
+		expected bool
+	}{
+		{"1-1008-00092-22-1", true},
+		{"1 1008 00092 22 1", true},
+		{"9000-8000-9222-1", false},
+	}
+
+	for _, tc := range cases {
+		if got := IsValidWithNormalize(tc.id); got != tc.expected {
+			t.Errorf("IsValidWithNormalize(%q) = %v; want %v", tc.id, got, tc.expected)
+		}
+	}
+}
+
+func TestNormalize(t *testing.T) {
+	if got := Normalize("1-1008 00092-22-1"); got != "1100800092221" {
+		t.Fatalf("Normalize did not strip separators: got %q", got)
 	}
 }
